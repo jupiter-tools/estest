@@ -41,23 +41,23 @@ class ElasticsearchDataToolsTest {
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;
 
-    @BeforeEach
-    void setUp() {
-        dropIndex(Foo.class);
-        dropIndex(Bar.class);
-    }
-
-    @AfterEach
-    void tearDown() {
-        dropIndex(Foo.class);
-        dropIndex(Bar.class);
-    }
-
     @Nested
     class ExportTests {
 
-        private static final String OUTPUT_FILE_NAME = "./target/export.json";
+        private static final String OUTPUT_FILE_NAME = "./target/ElasticsearchDataToolsTest-ExportTests.json";
         private static final String EXPECTED_RESULT = "/dataset/expected_export_result.json";
+
+        @BeforeEach
+        void setUp() {
+            dropIndex(Foo.class);
+            dropIndex(Bar.class);
+        }
+
+        @AfterEach
+        void tearDown() {
+            dropIndex(Foo.class);
+            dropIndex(Bar.class);
+        }
 
         @Test
         void export() throws IOException {
@@ -94,6 +94,18 @@ class ElasticsearchDataToolsTest {
 
     @Nested
     class ImportTests {
+
+        @BeforeEach
+        void setUp() {
+            dropIndex(Foo.class);
+            dropIndex(Bar.class);
+        }
+
+        @AfterEach
+        void tearDown() {
+            dropIndex(Foo.class);
+            dropIndex(Bar.class);
+        }
 
         @Test
         void importSimpleDataSet() {
