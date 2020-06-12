@@ -1,5 +1,6 @@
 package com.jupitertools.estest.internal;
 
+import java.util.Map;
 import java.util.Set;
 
 
@@ -13,9 +14,11 @@ import com.jupitertools.datasetroll.expect.dynamic.value.GroovyDynamicValue;
 import com.jupitertools.datasetroll.expect.dynamic.value.JavaScriptDynamicValue;
 import com.jupitertools.datasetroll.exportdata.ExportFile;
 import com.jupitertools.datasetroll.exportdata.JsonExport;
+import com.jupitertools.datasetroll.exportdata.scanner.AnnotatedDocumentScanner;
 import com.jupitertools.datasetroll.importdata.ImportFile;
 import com.jupitertools.datasetroll.importdata.JsonImport;
 
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 
 /**
@@ -27,6 +30,9 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
  * @author Korovin Anatoliy
  */
 public class ElasticsearchDataTools {
+
+    //TODO: extract all public methods from this class to the separate interface
+    // and use it in different implementations such as mogodb, elastic, rabbitmq, e.t.c.
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
@@ -69,6 +75,26 @@ public class ElasticsearchDataTools {
         new MatchDataSets(actualDataSet, expectedDataSet).check();
     }
 
+    /**
+     * Clean whole elasticsearch database.
+     * Be careful this method drop all collections in the database.
+     */
+    public void cleanDataBase() {
+        // find all indexes:
+        Map<String, Class<?>> indexes =
+                new AnnotatedDocumentScanner("").scan(Document.class)
+                                                .mapByAnnotationAttr(Document.class, Document::indexName);
+        // drop all founded indexes:
+        indexes.forEach((k, v) -> {
+            elasticsearchTemplate.deleteIndex(v);
+            elasticsearchTemplate.createIndex(v);
+            elasticsearchTemplate.putMapping(v);
+            elasticsearchTemplate.refresh(v);
+        });
+    }
+
+    // TODO: should be a mechanics to add one more evaluators
+    //  in runtime (something like DI...)
     private Set<DynamicValue> getDynamicEvaluators() {
         return Sets.newHashSet(new GroovyDynamicValue(),
                                new JavaScriptDynamicValue(),

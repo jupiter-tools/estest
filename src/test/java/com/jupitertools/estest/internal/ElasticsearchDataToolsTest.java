@@ -43,20 +43,18 @@ class ElasticsearchDataToolsTest {
 
     @BeforeEach
     void setUp() {
-        dropIndex(Foo.class);
-        dropIndex(Bar.class);
+        new ElasticsearchDataTools(elasticsearchTemplate).cleanDataBase();
     }
 
     @AfterEach
     void tearDown() {
-        dropIndex(Foo.class);
-        dropIndex(Bar.class);
+        new ElasticsearchDataTools(elasticsearchTemplate).cleanDataBase();
     }
 
     @Nested
     class ExportTests {
 
-        private static final String OUTPUT_FILE_NAME = "./target/export.json";
+        private static final String OUTPUT_FILE_NAME = "./target/ElasticsearchDataToolsTest-ExportTests.json";
         private static final String EXPECTED_RESULT = "/dataset/expected_export_result.json";
 
         @Test
@@ -153,14 +151,6 @@ class ElasticsearchDataToolsTest {
         }
     }
 
-
-    private void dropIndex(Class<?> indexClassType) {
-        System.out.println("DROP: " + indexClassType.getName());
-        elasticsearchTemplate.deleteIndex(indexClassType);
-        elasticsearchTemplate.createIndex(indexClassType);
-        elasticsearchTemplate.putMapping(indexClassType);
-        elasticsearchTemplate.refresh(indexClassType);
-    }
 
     @Data
     @NoArgsConstructor
