@@ -34,11 +34,11 @@ class ElasticDataSetImportIT {
 	private ElasticsearchTemplate elasticsearchTemplate;
 
 	/**
-	 * Testing import to the current mongo database from a dataset defined in the MongoDataSet annotation
+	 * Testing import to the current database from a dataset defined in the {@link ElasticDataSet} annotation
 	 */
 	@Test
 	@ElasticDataSet(value = "/dataset/extension/multidocument_dataset.json", cleanBefore = true, cleanAfter = true)
-	void testImportByMongoDataSetAnnotation() throws Exception {
+	void testImportByDataSetAnnotation() throws Exception {
 		// Act
 		Foo fooDoc = findById(FIRST_ID, Foo.class);
 		Bar simpleDoc = findById(SECOND_ID, Bar.class);

@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
  *
  * You can use this annotation in tests to
  * generate files with data sets.
- * All document collections from current database
- * will be store in export file, after test execution.
+ * All document collections from a current database
+ * will be store in the exported file, after test execution.
  *
  * @author Korovin Anatoliy
  */

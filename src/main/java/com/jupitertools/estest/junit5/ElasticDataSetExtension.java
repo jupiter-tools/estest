@@ -3,12 +3,13 @@ package com.jupitertools.estest.junit5;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.UUID;
 
+import com.jupitertools.datasetroll.exportdata.scanner.AnnotatedDocumentScanner;
 import com.jupitertools.estest.annotation.ElasticDataSet;
 import com.jupitertools.estest.annotation.ExpectedElasticDataSet;
 import com.jupitertools.estest.annotation.ExportElasticDataSet;
 import com.jupitertools.estest.internal.ElasticsearchDataTools;
-import com.jupitertools.datasetroll.exportdata.scanner.AnnotatedDocumentScanner;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -22,7 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /**
  * Created on 11/12/2019
  * <p>
- * TODO: replace on the JavaDoc
+ * Junit5 extension to easy work with elasticsearch data sets in your tests.
  *
  * @author Korovin Anatoliy
  */
@@ -34,7 +35,7 @@ public class ElasticDataSetExtension implements Extension,
 	private ElasticsearchTemplate elasticTemplate;
 
 	public static final ExtensionContext.Namespace NAMESPACE =
-			ExtensionContext.Namespace.create("com", "jupiter-tools", "spring-test-mongo", "read-only-dataset");
+			ExtensionContext.Namespace.create("com", "jupiter-tools", "estest", "read-only-dataset");
 
 	/**
 	 * check existence of the {@link ElasticsearchTemplate} in the context
@@ -59,24 +60,24 @@ public class ElasticDataSetExtension implements Extension,
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 
-		ElasticDataSet mongoDataSet = getAnnotationFromCurrentMethod(context, ElasticDataSet.class);
+		ElasticDataSet elasticDataSet = getAnnotationFromCurrentMethod(context, ElasticDataSet.class);
 
-		if (mongoDataSet == null) {
+		if (elasticDataSet == null) {
 			return;
 		}
 
-		if (mongoDataSet.cleanBefore()) {
+		if (elasticDataSet.cleanBefore()) {
 			cleanDataBase();
 		}
 
 		// populate before test invocation
-		if (!mongoDataSet.value().isEmpty()) {
-			new ElasticsearchDataTools(elasticTemplate).importFrom(mongoDataSet.value());
+		if (!elasticDataSet.value().isEmpty()) {
+			new ElasticsearchDataTools(elasticTemplate).importFrom(elasticDataSet.value());
 		}
 
-		// if read-only data set than we need to save a mongo state before run test in temp file
+		// if read-only data set is on than we need to save a DB state in temp file before run tests
 		if (isReadOnlyDataSet(context)) {
-			File tempFile = File.createTempFile("mongo-test-", "-readonly");
+			File tempFile = File.createTempFile("estest-readonly-",  UUID.randomUUID().toString());
 			tempFile.deleteOnExit();
 			new ElasticsearchDataTools(elasticTemplate).exportTo(tempFile.getAbsolutePath());
 			context.getStore(NAMESPACE).put("beforeDataSetFile", tempFile.getAbsolutePath());
@@ -105,7 +106,7 @@ public class ElasticDataSetExtension implements Extension,
 		try {
 			new ElasticsearchDataTools(elasticTemplate).expect(filePath);
 		} catch (Error e) {
-			throw new RuntimeException("Expected ReadOnly dataset, but found some modifications:",e);
+			throw new RuntimeException("Expected ReadOnly dataset, but found some modifications:", e);
 		}
 	}
 
@@ -119,23 +120,22 @@ public class ElasticDataSetExtension implements Extension,
 	//endregion Expected
 
 	private void exportDataSet(ExtensionContext context) {
-
-		ExportElasticDataSet exportMongoDataSet = getAnnotationFromCurrentMethod(context, ExportElasticDataSet.class);
-		if (exportMongoDataSet == null) {
+		ExportElasticDataSet exportElasticDataSet = getAnnotationFromCurrentMethod(context, ExportElasticDataSet.class);
+		if (exportElasticDataSet == null) {
 			return;
 		}
-		new ElasticsearchDataTools(elasticTemplate).exportTo(exportMongoDataSet.outputFile());
+		new ElasticsearchDataTools(elasticTemplate).exportTo(exportElasticDataSet.outputFile());
 	}
 
 	private void cleanAfter(ExtensionContext context) {
-		ElasticDataSet mongoDataSet = getAnnotationFromCurrentMethod(context, ElasticDataSet.class);
-		if (mongoDataSet != null && mongoDataSet.cleanAfter()) {
+		ElasticDataSet elasticDataSet = getAnnotationFromCurrentMethod(context, ElasticDataSet.class);
+		if (elasticDataSet != null && elasticDataSet.cleanAfter()) {
 			cleanDataBase();
 		}
 	}
 
+	//TODO: remove this in ElasticsearchDataTools class
 	private void cleanDataBase() {
-
 		Map<String, Class<?>> indexes =
 				new AnnotatedDocumentScanner("").scan(Document.class)
 				                                .mapByAnnotationAttr(Document.class, Document::indexName);
@@ -155,7 +155,7 @@ public class ElasticDataSetExtension implements Extension,
 	}
 
 	private boolean isReadOnlyDataSet(ExtensionContext context) {
-		ElasticDataSet mongoDataSet = getAnnotationFromCurrentMethod(context, ElasticDataSet.class);
-		return mongoDataSet != null && mongoDataSet.readOnly();
+		ElasticDataSet elasticDataSet = getAnnotationFromCurrentMethod(context, ElasticDataSet.class);
+		return elasticDataSet != null && elasticDataSet.readOnly();
 	}
 }

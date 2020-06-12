@@ -7,6 +7,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
+/**
+ * Populate data in the ElasticSearch before run a test case.
+ * This annotation required {@link com.jupitertools.estest.junit5.ElasticDataSetExtension}
+ * you can declare this directly by {@link org.junit.jupiter.api.extension.ExtendWith} or
+ * use the {@link EnableElasticDataSet} in your tests.
+ *
+ * @author Korovin Anatoliy
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ElasticDataSet {
@@ -17,17 +25,17 @@ public @interface ElasticDataSet {
 	String value() default "";
 
 	/**
-	 * Clean a MongoDB database before the test execution
+	 * Clean an Elasticsearch database before the test execution
 	 */
 	boolean cleanBefore() default false;
 
 	/**
-	 * Clean a MongoDB database after the test execution
+	 * Clean an ElasticSearch database after the test execution
 	 */
 	boolean cleanAfter() default false;
 
 	/**
-	 * expected unmodifiable data set in this test case
+	 * Expected no modification a database while run test case
 	 */
 	boolean readOnly() default false;
 }

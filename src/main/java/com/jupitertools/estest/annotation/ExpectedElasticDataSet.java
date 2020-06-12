@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * You can use this annotation in tests
- * to check a state of the mongodb after the test execution.
+ * to check a state of the ElasticSearch after the test execution.
  *
  * After test execution, all document collections will check
  * to match to expected data set in the selected file.

@@ -15,7 +15,7 @@ import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
 /**
  * Created on 27/11/2019
  * <p>
- * TODO: replace on the JavaDoc
+ * Import data from {@link DataSet} to the ElasticSearch database.
  *
  * @author Korovin Anatoliy
  */
@@ -37,7 +37,8 @@ public class ElasticsearchDataImport implements DataSetImport {
                });
     }
 
-    private <DocumentTypeT> void importDocumentCollection(Class<DocumentTypeT> documentClass, List<Map<String, Object>> recordCollection) {
+    private <DocumentTypeT> void importDocumentCollection(Class<DocumentTypeT> documentClass,
+                                                          List<Map<String, Object>> recordCollection) {
         recordCollection.forEach(document -> {
             DocumentTypeT convertedDocument = objectMapper.convertValue(document, documentClass);
             elasticsearchTemplate.index(new IndexQueryBuilder().withObject(convertedDocument).build());

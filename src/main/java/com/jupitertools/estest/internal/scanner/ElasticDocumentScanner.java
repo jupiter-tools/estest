@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 /**
  * Created on 19/11/2019
  * <p>
- * TODO: replace on the JavaDoc
+ * Scans packages of a current repository for classes annotated with the {@link Document}.
  *
  * @author Korovin Anatoliy
  */

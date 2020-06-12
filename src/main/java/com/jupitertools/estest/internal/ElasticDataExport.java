@@ -12,6 +12,8 @@ import com.jupitertools.datasetroll.DataSet;
 import com.jupitertools.datasetroll.exportdata.DataSetExport;
 import com.jupitertools.estest.internal.scanner.ElasticDocumentScanner;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -19,7 +21,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 /**
  * Created on 18/11/2019
  * <p>
- * TODO: replace on the JavaDoc
+ * Exports all documents from ElasticSearch database to the {@link DataSet} instance.
  *
  * @author Korovin Anatoliy
  */
@@ -27,6 +29,7 @@ public class ElasticDataExport implements DataSetExport {
 
 	private final ElasticsearchTemplate elasticsearchTemplate;
 	private final ObjectMapper objectMapper;
+	private final Logger log;
 
 	private final static NativeSearchQueryBuilder MATCH_ALL_QUERY =
 			new NativeSearchQueryBuilder()
@@ -36,14 +39,14 @@ public class ElasticDataExport implements DataSetExport {
 	public ElasticDataExport(ElasticsearchTemplate elasticsearchTemplate) {
 		this.elasticsearchTemplate = elasticsearchTemplate;
 		this.objectMapper = new ObjectMapper();
+		this.log = LoggerFactory.getLogger(this.getClass());
 	}
 
 	@Override
 	public DataSet export() {
 
 		Map<String, Class<?>> documents = new ElasticDocumentScanner("").scan();
-		System.out.println("SCANNED: " + documents);
-
+		log.debug("Scanned elasticsearch documents: {}", documents);
 		Map<String, List<Map<String, Object>>> dataSet = new LinkedHashMap<>();
 		List<Class<?>> sortedDocuments = documents.values()
 		                                          .stream()

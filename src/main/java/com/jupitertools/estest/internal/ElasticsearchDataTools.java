@@ -21,7 +21,8 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 /**
  * Created on 25/11/2019
  * <p>
- * TODO: replace on the JavaDoc
+ * The entry point to work with ElasticSearch in junit5 extensions.
+ * This class provide an abilities to export/import/expect data sets.
  *
  * @author Korovin Anatoliy
  */
@@ -57,15 +58,15 @@ public class ElasticsearchDataTools {
     }
 
     /**
-     * Check data in the mongodb,
-     * try to match data from the DB to loaded from file data set.
+     * Check data in the Elasticsearch database,
+     * try to match data from the DB with a loaded from file data set.
      *
      * @param fileName path to file with an expected data set
      */
     public void expect(String fileName) {
-        DataSet dataSet = new DynamicDataSet(new JsonImport(new ImportFile(fileName)), getDynamicEvaluators());
-        DataSet mongoData = new ElasticDataExport(elasticsearchTemplate).export();
-        new MatchDataSets(mongoData, dataSet).check();
+        DataSet expectedDataSet = new DynamicDataSet(new JsonImport(new ImportFile(fileName)), getDynamicEvaluators());
+        DataSet actualDataSet = new ElasticDataExport(elasticsearchTemplate).export();
+        new MatchDataSets(actualDataSet, expectedDataSet).check();
     }
 
     private Set<DynamicValue> getDynamicEvaluators() {
