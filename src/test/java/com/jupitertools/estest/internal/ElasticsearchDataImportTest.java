@@ -38,10 +38,7 @@ class ElasticsearchDataImportTest {
 
     @BeforeEach
     void setUp() {
-        elasticsearchTemplate.deleteIndex(Bar.class);
-        elasticsearchTemplate.createIndex(Bar.class);
-        elasticsearchTemplate.putMapping(Bar.class);
-        elasticsearchTemplate.refresh(Bar.class);
+        new ElasticsearchDataTools(elasticsearchTemplate).cleanDataBase();
     }
 
     @Test

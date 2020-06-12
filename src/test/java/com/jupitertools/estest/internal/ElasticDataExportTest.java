@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,16 +36,19 @@ class ElasticDataExportTest {
 
     @BeforeEach
     void setUp() {
-        // init index & mapping
-        elasticsearchTemplate.deleteIndex(Foo.class);
-        elasticsearchTemplate.createIndex(Foo.class);
-        elasticsearchTemplate.putMapping(Foo.class);
-        elasticsearchTemplate.refresh(Foo.class);
+        // clean before:
+        new ElasticsearchDataTools(elasticsearchTemplate).cleanDataBase();
         // populate
         elasticsearchTemplate.index(new IndexQueryBuilder().withObject(FIRST).build());
         elasticsearchTemplate.index(new IndexQueryBuilder().withObject(SECOND).build());
         // flush
         elasticsearchTemplate.refresh(Foo.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        // clean after:
+        new ElasticsearchDataTools(elasticsearchTemplate).cleanDataBase();
     }
 
     @Test

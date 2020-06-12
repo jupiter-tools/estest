@@ -33,6 +33,7 @@ public class ElasticDataSetExtension implements Extension,
                                                 AfterEachCallback {
 
 	private ElasticsearchTemplate elasticTemplate;
+	private ElasticsearchDataTools elasticsearchDataTools;
 
 	public static final ExtensionContext.Namespace NAMESPACE =
 			ExtensionContext.Namespace.create("com", "jupiter-tools", "estest", "read-only-dataset");
@@ -51,6 +52,8 @@ public class ElasticDataSetExtension implements Extension,
 		if (elasticTemplate == null) {
 			throw new Error("Unable to load ElasticsearchTemplate from the application context");
 		}
+
+		this.elasticsearchDataTools = new ElasticsearchDataTools(elasticTemplate);
 	}
 
 	/**
@@ -67,19 +70,19 @@ public class ElasticDataSetExtension implements Extension,
 		}
 
 		if (elasticDataSet.cleanBefore()) {
-			cleanDataBase();
+			elasticsearchDataTools.cleanDataBase();
 		}
 
 		// populate before test invocation
 		if (!elasticDataSet.value().isEmpty()) {
-			new ElasticsearchDataTools(elasticTemplate).importFrom(elasticDataSet.value());
+			elasticsearchDataTools.importFrom(elasticDataSet.value());
 		}
 
 		// if read-only data set is on than we need to save a DB state in temp file before run tests
 		if (isReadOnlyDataSet(context)) {
 			File tempFile = File.createTempFile("estest-readonly-",  UUID.randomUUID().toString());
 			tempFile.deleteOnExit();
-			new ElasticsearchDataTools(elasticTemplate).exportTo(tempFile.getAbsolutePath());
+			elasticsearchDataTools.exportTo(tempFile.getAbsolutePath());
 			context.getStore(NAMESPACE).put("beforeDataSetFile", tempFile.getAbsolutePath());
 		}
 	}
@@ -104,7 +107,7 @@ public class ElasticDataSetExtension implements Extension,
 		String filePath = (String) context.getStore(NAMESPACE)
 		                                  .get("beforeDataSetFile");
 		try {
-			new ElasticsearchDataTools(elasticTemplate).expect(filePath);
+			elasticsearchDataTools.expect(filePath);
 		} catch (Error e) {
 			throw new RuntimeException("Expected ReadOnly dataset, but found some modifications:", e);
 		}
@@ -115,7 +118,7 @@ public class ElasticDataSetExtension implements Extension,
 		if (expectedElasticDataSet == null) {
 			return;
 		}
-		new ElasticsearchDataTools(elasticTemplate).expect(expectedElasticDataSet.value());
+		elasticsearchDataTools.expect(expectedElasticDataSet.value());
 	}
 	//endregion Expected
 
@@ -124,28 +127,14 @@ public class ElasticDataSetExtension implements Extension,
 		if (exportElasticDataSet == null) {
 			return;
 		}
-		new ElasticsearchDataTools(elasticTemplate).exportTo(exportElasticDataSet.outputFile());
+		elasticsearchDataTools.exportTo(exportElasticDataSet.outputFile());
 	}
 
 	private void cleanAfter(ExtensionContext context) {
 		ElasticDataSet elasticDataSet = getAnnotationFromCurrentMethod(context, ElasticDataSet.class);
 		if (elasticDataSet != null && elasticDataSet.cleanAfter()) {
-			cleanDataBase();
+			elasticsearchDataTools.cleanDataBase();
 		}
-	}
-
-	//TODO: remove this in ElasticsearchDataTools class
-	private void cleanDataBase() {
-		Map<String, Class<?>> indexes =
-				new AnnotatedDocumentScanner("").scan(Document.class)
-				                                .mapByAnnotationAttr(Document.class, Document::indexName);
-
-		indexes.forEach((k, v) -> {
-			elasticTemplate.deleteIndex(v);
-			elasticTemplate.createIndex(v);
-			elasticTemplate.putMapping(v);
-			elasticTemplate.refresh(v);
-		});
 	}
 
 	private <AnnotationT extends Annotation> AnnotationT getAnnotationFromCurrentMethod(ExtensionContext context,

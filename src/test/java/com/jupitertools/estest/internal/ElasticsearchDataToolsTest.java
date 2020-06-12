@@ -41,23 +41,21 @@ class ElasticsearchDataToolsTest {
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;
 
+    @BeforeEach
+    void setUp() {
+        new ElasticsearchDataTools(elasticsearchTemplate).cleanDataBase();
+    }
+
+    @AfterEach
+    void tearDown() {
+        new ElasticsearchDataTools(elasticsearchTemplate).cleanDataBase();
+    }
+
     @Nested
     class ExportTests {
 
         private static final String OUTPUT_FILE_NAME = "./target/ElasticsearchDataToolsTest-ExportTests.json";
         private static final String EXPECTED_RESULT = "/dataset/expected_export_result.json";
-
-        @BeforeEach
-        void setUp() {
-            dropIndex(Foo.class);
-            dropIndex(Bar.class);
-        }
-
-        @AfterEach
-        void tearDown() {
-            dropIndex(Foo.class);
-            dropIndex(Bar.class);
-        }
 
         @Test
         void export() throws IOException {
@@ -94,18 +92,6 @@ class ElasticsearchDataToolsTest {
 
     @Nested
     class ImportTests {
-
-        @BeforeEach
-        void setUp() {
-            dropIndex(Foo.class);
-            dropIndex(Bar.class);
-        }
-
-        @AfterEach
-        void tearDown() {
-            dropIndex(Foo.class);
-            dropIndex(Bar.class);
-        }
 
         @Test
         void importSimpleDataSet() {
@@ -165,14 +151,6 @@ class ElasticsearchDataToolsTest {
         }
     }
 
-
-    private void dropIndex(Class<?> indexClassType) {
-        System.out.println("DROP: " + indexClassType.getName());
-        elasticsearchTemplate.deleteIndex(indexClassType);
-        elasticsearchTemplate.createIndex(indexClassType);
-        elasticsearchTemplate.putMapping(indexClassType);
-        elasticsearchTemplate.refresh(indexClassType);
-    }
 
     @Data
     @NoArgsConstructor
