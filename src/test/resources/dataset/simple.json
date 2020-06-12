@@ -1,0 +1,9 @@
+{
+  "com.jupitertools.estest.internal.ElasticsearchDataToolsTest$Bar" : [ {
+    "id" : "82f8f35b-93cf-40a1-9530-c13f2206cd76",
+    "name" : "FIRST-ONE"
+  }, {
+    "id" : "5fdac253-5650-4687-bb72-425da395bb8f",
+    "name" : "SECOND-ONE"
+  } ]
+}

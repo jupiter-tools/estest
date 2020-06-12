@@ -1,0 +1,14 @@
+{
+  "com.jupitertools.estest.documents.Bar" : [ {
+    "id" : "55f3ed00b1375a48e618300a",
+    "data" : "A"
+  }, {
+    "id" : "55f3ed00b1375a48e618300b",
+    "data" : "BB"
+  } ],
+  "com.jupitertools.estest.documents.Foo" : [ {
+    "id" : "77f3ed00b1375a48e618300a",
+    "time" : 1516527720000,
+    "counter" : 1
+  } ]
+}

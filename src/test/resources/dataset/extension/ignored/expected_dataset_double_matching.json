@@ -1,0 +1,30 @@
+{
+  "com.jupitertools.estest.documents.Bar": [
+    {
+      "data": "data-1"
+    },
+    {
+      "data": "data-2"
+    },
+    {
+      "data": "data-2"
+    }
+  ],
+  "com.jupitertools.estest.documents.Foo": [
+    {
+      "counter": 1
+    },
+    {
+      "counter": 2
+    },
+    {
+      "counter": 3
+    },
+    {
+      "counter": 4
+    },
+    {
+      "counter": 3
+    }
+  ]
+}

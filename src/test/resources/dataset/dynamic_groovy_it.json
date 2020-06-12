@@ -1,0 +1,9 @@
+{
+  "com.jupitertools.estest.internal.ElasticsearchDataToolsTest$Foo": [
+    {
+      "id": "groovy: 2*4",
+      "time": "groovy: new Date()",
+      "counter": "groovy: (1..10).sum()"
+    }
+  ]
+}
