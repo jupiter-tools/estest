@@ -2,10 +2,8 @@ package com.jupitertools.estest.junit5;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.Map;
 import java.util.UUID;
 
-import com.jupitertools.datasetroll.exportdata.scanner.AnnotatedDocumentScanner;
 import com.jupitertools.estest.annotation.ElasticDataSet;
 import com.jupitertools.estest.annotation.ExpectedElasticDataSet;
 import com.jupitertools.estest.annotation.ExportElasticDataSet;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -80,7 +77,7 @@ public class ElasticDataSetExtension implements Extension,
 
 		// if read-only data set is on than we need to save a DB state in temp file before run tests
 		if (isReadOnlyDataSet(context)) {
-			File tempFile = File.createTempFile("estest-readonly-",  UUID.randomUUID().toString());
+			File tempFile = File.createTempFile("estest-readonly-", UUID.randomUUID().toString());
 			tempFile.deleteOnExit();
 			elasticsearchDataTools.exportTo(tempFile.getAbsolutePath());
 			context.getStore(NAMESPACE).put("beforeDataSetFile", tempFile.getAbsolutePath());

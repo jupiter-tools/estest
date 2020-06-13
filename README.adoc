@@ -1,0 +1,51 @@
+:toc: preamble
+:sectnums:
+
+# EStest - ElasticSearch Test
+
+image:https://github.com/jupiter-tools/estest/workflows/Build/badge.svg[build]
+
+Tools to write integration tests of SpringBoot applications with ElasticSearch persistence layer.
+
+
+## Introduction
+
+`estest` allows you to write integration tests in a more pragmatic
+manner using annotations and extension for JUnit5.
+You can use JSON files to prepare the state of a database
+or to check this state after some activities (create, update, delete, e.t.c).
+
+## Getting started
+
+You need to add the following dependency:
+
+[source, xml]
+----
+<dependency>
+    <groupId>com.jupiter-tools</groupId>
+    <artifactId>estest</artifactId>
+    <version>0.1</version>
+    <scope>test</scope>
+</dependency>
+----
+
+## How to populate data before tests run in ElasticSearch
+
+Let's look at the example of using the TestContainers library to make integration tests.
+And the JUnit5 extension(which initialize database before test execution) to make your tests more pragmatic and elegant.
+
+[source,java]
+----
+@EnableElasticDataSet <2>
+@ElasticsearchTestContainer <1>
+class JUnit5ExampleTest {
+
+    @Autowired
+    private ElasticsearchTemplate elasticTemplate;
+
+    ...
+}
+----
+<1> This annotation runs Elasticsearch instance by the use of Testcontainers library
+<2> Turns on SpringTestMongo which able you to use DataSets in tests
+
