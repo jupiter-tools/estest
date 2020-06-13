@@ -47,5 +47,5 @@ class JUnit5ExampleTest {
 }
 ----
 <1> This annotation runs Elasticsearch instance by the use of Testcontainers library
-<2> Turns on SpringTestMongo which able you to use DataSets in tests
+<2> Turns on a smart dataset matching, which able you to use elasticsearch DataSets in your tests
 
