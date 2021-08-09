@@ -45,7 +45,7 @@
         <junit-platform.version>1.6.2</junit-platform.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
         <guava.version>27.1-jre</guava.version>
-        <elasticsearch.version>6.8.4</elasticsearch.version>
+        <elasticsearch.version>6.8.17</elasticsearch.version>
         <datasetroll.version>0.1</datasetroll.version>
         <spring-test-elasticsearch.version>0.1</spring-test-elasticsearch.version>
         <lombok.version>1.18.12</lombok.version>
